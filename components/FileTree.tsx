@@ -1,20 +1,21 @@
 import { FileTree } from '@/types';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export function FileTreeComponent() {
     const [fileTree, setFileTree] = useState<FileTree[]>();
     const [openDirectories, setOpenDirectories] = useState<string[]>([]);
     const [openFiles, setOpenFiles] = useState<string>("");
 
-    useEffect(() => {
-        const getFiles = async () => {
-            const files = await fetch('./api/files');
-            const fileTree = await files.json();
+    const GetFileTree = useCallback(async () => {
+        const files = await fetch('./api/files');
+        const fileTree = await files.json();
 
-            setFileTree(fileTree);
-        }
-        getFiles()
+        setFileTree(fileTree);
     }, []);
+
+    useEffect(() => {
+        GetFileTree()
+    }, [GetFileTree]);
 
     function toggleDirectory(event: React.MouseEvent, name: string | undefined) {
         event.stopPropagation();
@@ -63,13 +64,13 @@ export function FileTreeComponent() {
     }
 
     return (
-        <div className='flex justify-between w-full'>
-            <div className='w-64'>
+        <div className='flex justify-start w-full'>
+            <div className='w-64 pr-20'>
                 <h1>File Tree</h1>
                 {RenderTree(fileTree)}
             </div>
-            <div className='w-full'>
-                <pre>{openFiles}</pre>
+            <div className='w-fit whitespace-pre-line'>
+                {openFiles}
             </div>
         </div>
     )
