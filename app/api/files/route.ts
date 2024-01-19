@@ -34,15 +34,15 @@ async function readDirectory(
 		if (dirent.isDirectory()) {
 			return {
 				name: dirent.name,
-				type: 'directory',
+				type: "directory",
 				children: await readDirectory(res, ignore),
-			} as FileTree;
+			};
 		}
 		return {
 			name: dirent.name,
-			type: 'file',
+			type: "file",
 			path: res,
-		} as FileTree;
+		};
 	});
 
 	const files: (FileTree | null)[] = await Promise.all(promises);

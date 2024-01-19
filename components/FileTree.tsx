@@ -1,5 +1,6 @@
 import { FileTree } from '@/types';
 import { useCallback, useEffect, useState } from 'react';
+import type { MouseEvent } from 'react';
 
 export function FileTreeComponent() {
     const [fileTree, setFileTree] = useState<FileTree[]>();
@@ -17,7 +18,7 @@ export function FileTreeComponent() {
         GetFileTree()
     }, [GetFileTree]);
 
-    function toggleDirectory(event: React.MouseEvent, name: string | undefined) {
+    function toggleDirectory(event: MouseEvent, name: string | undefined) {
         event.stopPropagation();
 
         if (!name) return;
@@ -25,9 +26,8 @@ export function FileTreeComponent() {
         setOpenDirectories(prev => {
             if (prev?.includes(name)) {
                 return prev.filter(dir => dir !== name);
-            } else {
-                return [...prev, name];
             }
+            return [...prev, name];
         });
     }
 
@@ -36,7 +36,7 @@ export function FileTreeComponent() {
 
         console.log(child.path);
 
-        const data = await fetch(`./api/files`, { method: 'POST', body: JSON.stringify({ path: child.path }) });
+        const data = await fetch("./api/files", { method: 'POST', body: JSON.stringify({ path: child.path }) });
 
         const file = await data.text();
 
@@ -49,14 +49,14 @@ export function FileTreeComponent() {
                 {fileTree?.map((child) => {
                     if (child.type === 'directory') {
                         return (
-                            <li key={child.name} className="font-bold" onClick={(event) => toggleDirectory(event, child.name)}>
+                            <li key={child.name} className="font-bold" onClick={(event) => toggleDirectory(event, child.name)} onKeyDown={undefined}>
                                 {child.name}
-                                {openDirectories.includes(child.name!) && RenderTree(child.children)}
+                                {child.name && openDirectories.includes(child.name) && RenderTree(child.children)}
                             </li>
                         );
                     }
                     if (child.type === 'file') {
-                        return <li key={child.name} onClick={() => OpenFile(child)} className="text-blue-500 hover:cursor-pointer">{child.name}</li>
+                        return <li key={child.name} onClick={() => OpenFile(child)} className="text-blue-500 hover:cursor-pointer" onKeyDown={undefined}>{child.name}</li>
                     }
                 })}
             </ul>
